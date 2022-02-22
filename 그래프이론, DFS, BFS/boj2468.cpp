@@ -50,4 +50,3 @@ int main()
 	cout << max;
 
 }
-
