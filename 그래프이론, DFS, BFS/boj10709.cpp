@@ -1,30 +1,34 @@
-#include<iostream>
+#include <iostream>
+#include <algorithm>
+#include <stdio.h>
+#include <vector>
 using namespace std;
-int h,w;
-char c;
-int idx = -1;
-int cnt;
+int h, w;
 
-int main() {
+int main()
+{
 	cin >> h >> w;
-	for (int i = 0; i < h; i++) {
-		int cnt = 0;
+	for (int i = 0; i < h; i++)
+	{
 		int idx = -1;
-		for (int j = 0; j < w; j++) {
+		for (int j = 0; j < w; j++)
+		{
+			char c;
 			cin >> c;
-			if (c == 'c') {
-				cnt = 0;
-				idx = j;
-				cout << cnt << " ";
+
+			if (c == 'c')
+			{
+				idx = 0;
+				cout << idx << " ";
 			}
-			else {
-				if (idx != -1) {
-					cnt++;
-					cout << cnt << " ";
-				}
-				else {
-					cout << "-1" << " ";
-				}
+			else if (idx != -1)
+			{
+				idx++;
+				cout << idx << " ";
+			}
+			else if (idx == -1)
+			{
+				cout << idx << " ";
 			}
 		}
 		cout << "\n";
