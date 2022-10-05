@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <queue>
 using namespace std;
-int n, m, a, root;
+int n, m, a, root, flag;
 int map[51][51];
 int del[51];
 int visited[51];
@@ -29,7 +29,6 @@ void bfs(int x)
                 {
                     del[node] = -2;
                     del[i] = -2;
-                    map[node][i] = -2; //삭제될 노드의 자식이면 -2로 바꿔줌
                 }
                 else if (i == m)
                 {
@@ -41,7 +40,6 @@ void bfs(int x)
                 del[node] = -2;
         }
         //자식이 없는 leaf노드
-
         if (cnt == 0 && del[node] != -2 && visited2[node] == 0)
         {
             leaf++;
@@ -49,6 +47,7 @@ void bfs(int x)
         }
     }
 }
+
 void dfs(int y)
 {
     for (int i = 0; i < n; i++)
@@ -61,30 +60,6 @@ void dfs(int y)
     }
     return;
 }
-int flag = 0;
-void tree(int t)
-{
-    for (int i = 0; i < n; i++)
-    {
-        if (i == t)
-        {
-            dfs(t);
-            flag = 1;
-            break;
-        }
-    }
-    if (flag) //자식이 없는 노드라면
-    {
-        for (int i = 0; i < n; i++)
-        {
-            if (map[i][t] == 1)
-            {
-                map[i][t] = -2;
-                break;
-            }
-        }
-    }
-}
 
 int main()
 {
@@ -96,12 +71,34 @@ int main()
             root = i;
         else
         {
-            map[a][i] = 1; //부모 자식
+            map[a][i] = 1;
         }
     }
+
     cin >> m; //삭제할 노드
 
-    tree(m);
+    for (int i = 0; i < n; i++)
+    {
+        if (i == m)
+        {
+            dfs(m);
+            flag = 1;
+            break;
+        }
+    }
+
+    if (flag) //자식이 없는 노드라면
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (map[i][m] == 1)
+            {
+                map[i][m] = -2;
+                break;
+            }
+        }
+    }
+
     bfs(root);
 
     cout << leaf << "\n";
