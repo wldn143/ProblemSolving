@@ -1,17 +1,32 @@
 #include <iostream>
+#include <algorithm>
 #include <stack>
-using namespace std; 
-int n, a[1000004], ret[1000004];
-stack<int> s; 
-int main(){
-	cin >> n; 
-	memset(ret, -1, sizeof(ret));
-	for(int i = 0; i < n; i++){
-		cin >> a[i];  
-		while(s.size() && a[s.top()] < a[i]){
-			ret[s.top()] = a[i]; s.pop();
+using namespace std;
+int n, m;
+int res[1000001], a[1000001];
+stack<int> st;
+
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+
+	cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		cin >> a[i];
+		while (st.size() && a[st.top()] < a[i])
+		{
+			res[st.top()] = a[i];
+			st.pop();
 		}
-		s.push(i);
+		st.push(i);
 	}
-	for(int i = 0; i < n; i++) cout << ret[i] << " ";  
-} 
+	for (int i = 0; i < n; i++)
+	{
+		int c = res[i];
+		if (!c)
+			c = -1;
+		cout << c << " ";
+	}
+}
