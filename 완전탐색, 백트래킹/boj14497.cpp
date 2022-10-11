@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
-#include <stack>
 using namespace std;
 int n, m, x1, y1, x2, y2, x, y, zy, zx;
 char c;
@@ -10,7 +9,6 @@ int a[302][302];
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, -1, 0, 1};
 int visited[302][302];
-int res = 100000000;
 queue<pair<int, int>> q;
 queue<pair<int, int>> zero;
 
@@ -27,7 +25,7 @@ int main()
         {
             cin >> c;
             if (c == '#')
-                a[i][j] = 100; //목적지
+                a[i][j] = 0; //목적지
             else if (c == '*')
                 a[i][j] = 2; //시작
             else
@@ -88,18 +86,6 @@ int main()
             }
         }
     }
-    if (visited[y2][x2] == 0)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            int ny = y2 + dy[i];
-            int nx = x2 + dx[i];
-            if (ny <= 0 || nx <= 0 || ny > n || nx > m)
-                continue;
-            res = min(res, visited[ny][nx]);
-        }
-    }
-    else
-        res = visited[y2][x2] - 1;
-    cout << res << "\n";
+
+    cout << visited[y2][x2] - 1 << "\n";
 }
