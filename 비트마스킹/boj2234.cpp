@@ -11,39 +11,18 @@ void dfs(int y, int x)
     r_cnt[rno]++;
     for (int i = 0; i < 4; i++)
     {
-        if ((a[y][x] & (1 << i)) == 0)
+        if (!(a[y][x] & (1 << i)))
         {
             if (i == 0 && x - 1 >= 0 && !visited[y][x - 1])
-            {
                 dfs(y, x - 1);
-            }
-            if (i == 1)
-            {
-                if (y - 1 < 0)
-                    continue;
-                if (visited[y - 1][x])
-                    continue;
+            if (i == 1 && y - 1 >= 0 && !visited[y - 1][x])
                 dfs(y - 1, x);
-            }
-            if (i == 2)
-            {
-                if (x + 1 >= m)
-                    continue;
-                if (visited[y][x + 1])
-                    continue;
+            if (i == 2 && x + 1 < m && !visited[y][x + 1])
                 dfs(y, x + 1);
-            }
-            if (i == 3)
-            {
-                if (y + 1 >= n)
-                    continue;
-                if (visited[y + 1][x])
-                    continue;
+            if (i == 3 && y + 1 < n && !visited[y + 1][x])
                 dfs(y + 1, x);
-            }
         }
     }
-    // return;
 }
 
 void dfs2(int y, int x)
