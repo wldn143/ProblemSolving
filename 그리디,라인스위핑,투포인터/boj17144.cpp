@@ -1,123 +1,142 @@
 #include <iostream>
 #include <algorithm>
-#include <vector>
-#include <queue>
 using namespace std;
-int a[54][54], n, m, t, ret, temp[54][54];
-vector<pair<int, int>> v1, v2;
+int n, m, t, a[51][51], tmp[51][51], visited[51][51], gx1, gy1, gx2, gy2, cnt, res;
+int dy[4] = {-1, 0, 1, 0};
+int dx[4] = {0, -1, 0, 1};
+void move(int y, int x, int c)
+{
+    visited[y][x] = 1;
+    for (int i = 0; i < 4; i++)
+    {
+        int ny = y + dy[i];
+        int nx = x + dx[i];
+        if (ny < 1 || nx < 1 || ny > n || nx > m || a[ny][nx] == -1)
+            continue;
+        c++;
+        tmp[ny][nx] += (a[y][x] / 5);
+        if (!visited[ny][nx])
+            move(ny, nx, 0);
+    }
 
-int dy1[] = {0, -1, 0, 1};
-int dx1[] = {1, 0, -1, 0};
-int dy2[] = {0, 1, 0, -1};
-int dx2[] = {1, 0, -1, 0};
-void mise_go(int dy[], int dx[])
-{
-    fill(&temp[0][0], &temp[0][0] + 54 * 54, 0);
-    queue<pair<int, int>> q;
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            if (a[i][j] != -1 && a[i][j])
-            {
-                q.push({i, j});
-            }
-        }
-    }
-    while (q.size())
-    {
-        int y, x;
-        tie(y, x) = q.front();
-        q.pop();
-        int spread = a[y][x] / 5;
-        for (int i = 0; i < 4; i++)
-        {
-            int ny = y + dy[i];
-            int nx = x + dx[i];
-            if (ny < 0 || ny >= n || nx < 0 || nx >= m || a[ny][nx] == -1)
-                continue;
-            temp[ny][nx] += spread;
-            a[y][x] -= spread;
-        }
-    }
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            a[i][j] += temp[i][j];
-        }
-    }
+    tmp[y][x] += (a[y][x] - (a[y][x] / 5) * c);
     return;
 }
-vector<pair<int, int>> chung(int sy, int sx, int dy[], int dx[])
+
+void wind(int y, int x, int mod, int d)
 {
-    vector<pair<int, int>> v;
-    int cnt = 0;
-    int y = sy;
-    int x = sx;
-    while (true)
+    int ny, nx;
+    if (mod == 1)
     {
-        int ny = y + dy[cnt];
-        int nx = x + dx[cnt];
-        if (ny == sy && nx == sx)
-            break;
-        if (ny < 0 || ny >= n || nx < 0 || nx >= m)
+        ny = y;
+        nx = x + 1;
+        if (nx == m)
         {
-            cnt++;
-            ny = y + dy[cnt];
-            nx = x + dx[cnt];
+            if (d == 0)
+                wind(ny, nx, 2, d);
+            else
+                wind(ny, nx, 4, d);
         }
-        if (ny == sy && nx == sx)
-            break;
-        y = ny;
-        x = nx;
-        v.push_back({ny, nx});
+        else
+            wind(ny, nx, 1, d);
     }
-    return v;
-}
-void go(vector<pair<int, int>> &v)
-{
-    for (int i = v.size() - 1; i > 0; i--)
+
+    if (mod == 2)
     {
-        a[v[i].first][v[i].second] = a[v[i - 1].first][v[i - 1].second];
+        ny = y - 1;
+        nx = x;
+        if (ny == 1)
+            wind(ny, nx, 3, d);
+        else if (ny == gy2)
+            return;
+
+        else
+            wind(ny, nx, 2, d);
     }
-    a[v[0].first][v[0].second] = 0;
-    return;
+    if (mod == 3)
+    {
+        ny = y;
+        nx = x - 1;
+        if (nx == gx1)
+        {
+            if (d == 0)
+                wind(ny, nx, 4, d);
+            else
+                wind(ny, nx, 2, d);
+        }
+        else
+            wind(ny, nx, 3, d);
+    }
+    if (mod == 4)
+    {
+        ny = y + 1;
+        nx = x;
+        if (ny == gy1)
+            return;
+
+        else if (ny == n)
+            wind(ny, nx, 3, d);
+
+        else
+            wind(ny, nx, 4, d);
+    }
+    tmp[ny][nx] = tmp[y][x];
+    if (tmp[ny][nx] == -1)
+        tmp[ny][nx] = 0;
 }
+
 int main()
 {
     cin >> n >> m >> t;
-    bool flag = 1;
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i <= n; i++)
     {
-        for (int j = 0; j < m; j++)
+        for (int j = 1; j <= m; j++)
         {
             cin >> a[i][j];
             if (a[i][j] == -1)
             {
-                if (flag)
+                if (!cnt)
                 {
-                    v1 = chung(i, j, dy1, dx1);
-                    flag = false;
+                    gx1 = j;
+                    gy1 = i;
                 }
                 else
-                    v2 = chung(i, j, dy2, dx2);
+                {
+                    gx2 = j;
+                    gy2 = i;
+                }
+                cnt++;
             }
         }
     }
+
     while (t--)
     {
-        mise_go(dy1, dx1);
-        go(v1);
-        go(v2);
-    }
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
+        for (int i = 1; i <= n; i++)
         {
-            if (a[i][j] != -1)
-                ret += a[i][j];
+            for (int j = 1; j <= m; j++)
+            {
+                if (a[i][j] == -1)
+                    tmp[i][j] = -1;
+                else if (a[i][j] != 0 && !visited[i][j])
+                    move(i, j, 0);
+            }
+        }
+
+        wind(gy1, gx1, 1, 0);
+        wind(gy2, gx2, 1, 1);
+        if (t == 0)
+            break;
+        fill(&visited[0][0], &visited[0][0] + 51 * 51, 0);
+        copy(&tmp[0][0], &tmp[0][0] + 51 * 51, &a[0][0]);
+        fill(&tmp[0][0], &tmp[0][0] + 51 * 51, 0);
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            res += tmp[i][j];
         }
     }
-    cout << ret << "\n";
+    cout << res + 2 << "\n";
 }
