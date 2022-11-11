@@ -50,23 +50,20 @@ int go()
     return res;
 }
 
-void dfs(int idx, int cnt)
+void dfs(int cnt)
 {
     if (cnt == 10)
     {
-        do
-        {
-            fill(&visited[0], &visited[0] + 32, 0);
-            fill(&l[0], &l[0] + 4, 0);
-            int tmp = go();
-            mx = max(mx, tmp);
-        } while (next_permutation(mm.begin(), mm.end()));
+        fill(&visited[0], &visited[0] + 32, 0);
+        fill(&l[0], &l[0] + 4, 0);
+        int tmp = go();
+        mx = max(mx, tmp);
         return;
     }
-    for (int i = idx; i < m.size(); i++)
+    for (int i = 0; i < m.size(); i++)
     {
         mm[cnt] = m[i];
-        dfs(i, cnt + 1);
+        dfs(cnt + 1);
     }
 }
 int main()
@@ -79,6 +76,6 @@ int main()
     v[17] = 34, v[18] = 36, v[19] = 38, v[20] = 40, v[21] = 13,
     v[22] = 16, v[23] = 19, v[24] = 25, v[27] = 22, v[28] = 24,
     v[25] = 30, v[26] = 35, v[29] = 28, v[30] = 27, v[31] = 26;
-    dfs(0, 0);
+    dfs(0);
     cout << mx << "\n";
 }
