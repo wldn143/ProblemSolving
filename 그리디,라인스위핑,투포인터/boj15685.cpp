@@ -11,14 +11,8 @@ void go(int x, int y, int d, int g)
     v.push_back(d);
     a[x][y] = 1;
     x += dx[d], y += dy[d];
-    d = dir[d];
-    v.push_back(d);
     a[x][y] = 1;
-    if (g > 0)
-    {
-        x += dx[d], y += dy[d];
-        a[x][y] = 1;
-    }
+
     while (v.size() < pow(2, g))
     {
         for (int i = v.size() - 1; i >= 0; i--)
