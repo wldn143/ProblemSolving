@@ -20,6 +20,7 @@ int main()
         for (int i = 0; i < n; i++)
         {
             auto pos = lower_bound(b.begin(), b.end(), a[i]);
+            cout << *pos << "\n";
             res += (int)(pos - b.begin());
         }
         cout << res << "\n";
