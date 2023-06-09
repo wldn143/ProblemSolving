@@ -1,72 +1,78 @@
 #include <iostream>
 #include <algorithm>
-#include <queue>
 #include <vector>
-#include <stdio.h>
 using namespace std;
-int n, m, c_total;
-int a[51][51];
-vector<pair<int, int>> chicken;
-vector<int> comb, v;
+#define MAX 987654321;
+struct A
+{
+    int y, x;
+};
+int n, m, house_cnt;
+vector<A> house;
+vector<A> chicken;
+vector<int> dis[101];
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
     cin >> n >> m;
+    int chicken_num = 1;
+
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            cin >> a[i][j];
-            if (a[i][j] == 2)
+            int k;
+            cin >> k;
+            if (k == 1)
             {
-                chicken.push_back({i, j}); //치킨집 위치 저장
-                c_total++;
+                house.push_back({i, j});
+                house_cnt++;
             }
+            if (k == 2)
+                chicken.push_back({i, j});
         }
     }
 
-    for (int i = 0; i < c_total - m; i++)
+    for (int i = 0; i < house.size(); i++)
     {
-        comb.push_back(0);
+        auto h = house[i];
+        for (auto c : chicken)
+            dis[i].push_back({abs(h.y - c.y) + abs(h.x - c.x)});
+        // 1번 집에서 1~5번까지의 치킨 거리
     }
+
+    // 조합 만들기
+    vector<int> com;
+    vector<int> mask;
+
+    for (int i = 0; i < chicken.size(); i++)
+        com.push_back(i);
+
+    for (int i = 0; i < chicken.size() - m; i++)
+        mask.push_back(0);
+
     for (int i = 0; i < m; i++)
-    {
-        comb.push_back(1);
-    }
+        mask.push_back(1);
+
+    int ret = MAX;
 
     do
     {
-        vector<pair<int, int>> b;
-        for (int i = 0; i < comb.size(); i++)
+        int sum = 0;
+        int min_dis; // 각 집에서 mask에 해당하는 치킨집까지의 거리의 최소
+        for (int i = 0; i < house_cnt; i++)
         {
-            if (comb[i] == 1)
+            min_dis = MAX;
+            for (int j = 0; j < mask.size(); j++) // 11100
             {
-                b.push_back({chicken[i].first, chicken[i].second});
-            }
-        }
-
-        int res = 0;
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                if (a[i][j] == 1)
+                if (mask[j])
                 {
-                    int dist = 100;
-                    for (int k = 0; k < m; k++)
-                    {
-                        int tmp = abs(i - b[k].first) + abs(j - b[k].second);
-                        dist = min(dist, tmp);
-                    }
-                    res += dist;
+                    min_dis = min(min_dis, dis[i][j]);
                 }
             }
+            sum += min_dis;
         }
-        v.push_back(res);
-    } while (next_permutation(comb.begin(), comb.end()));
+        ret = min(ret, sum);
+    } while (next_permutation(mask.begin(), mask.end()));
 
-    sort(v.begin(), v.end());
-    cout << v[0] << "\n";
+    cout << ret;
 }
