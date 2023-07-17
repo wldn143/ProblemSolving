@@ -1,30 +1,23 @@
-#include <cstdio>
-#include <cstring>
+#include <iostream>
+#include <algorithm>
+#define mod 1000000003;
 using namespace std;
-
-int dp_table[1001][1001];
 int n, k;
-
-int dp(int cur, int x)
-{
-    if (cur <= 0 || cur < 2 * x)
-        return 0;
-    if (x == 1)
-        return cur;
-
-    int &cache = dp_table[cur][x];
-    if (cache != -1)
-        return dp_table[cur][x];
-
-    return cache = (dp(cur - 2, x - 1) + dp(cur - 1, x)) % 1000000003;
-}
+int dp[1001][1001];
 
 int main()
 {
-    scanf("%d", &n);
-    scanf("%d", &k);
-    memset(dp_table, -1, sizeof(dp_table));
+    cin >> n >> k;
 
-    printf("%d", dp(n, k));
-    return 0;
+    for (int i = 0; i < n; i++)
+    {
+        dp[i][0] = 1;
+        dp[i][1] = i;
+    }
+
+    for (int i = 2; i <= n; i++)
+        for (int j = 2; j <= k; j++)
+            dp[i][j] = (dp[i - 2][j - 1] + dp[i - 1][j]) % mod;
+
+    cout << (dp[n - 1][k] + dp[n - 3][k - 1]) % mod;
 }
