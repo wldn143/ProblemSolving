@@ -5,137 +5,135 @@
 using namespace std;
 int r, c;
 char map[26][26];
-int dy[4] = {0, 0, 1, -1};
-int dx[4] = {1, -1, 0, 0};
+int dir[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 int open[4];
 vector<pair<int, int>> m;
 queue<pair<pair<int, int>, int>> q;
 int ry, rx;
 
-int check_limit(int y, int x)
+bool isValid(int y, int x)
 {
-    if (y <= 0 || x <= 0 || y > r || x > c)
-        return 0;
-    return 1;
+    return (y >= 1 && y <= r) && (x >= 1 && x <= c);
 }
 
 void find_pipe()
 {
     for (int i = 0; i < 4; i++)
     {
-        int ny = ry + dy[i];
-        int nx = rx + dx[i];
+        int ny = ry + dir[i][0];
+        int nx = rx + dir[i][1];
         char c = map[ny][nx];
-        if (check_limit(ny, nx) == 0)
-            continue;
         if (i == 0)
         {
-            if (c == '-' || c == '+' || c == '3' || c == '4')
+            if (c == '|' || c == '+' || c == '2' || c == '3')
                 open[0] = 1;
         }
         if (i == 1)
         {
-            if (c == '-' || c == '+' || c == '1' || c == '2')
+            if (c == '-' || c == '+' || c == '3' || c == '4')
                 open[1] = 1;
         }
         if (i == 2)
         {
-            if (c == '|' || c == '+' || c == '2' || c == '3')
+            if (c == '|' || c == '+' || c == '1' || c == '4')
                 open[2] = 1;
         }
         if (i == 3)
         {
-            if (c == '|' || c == '+' || c == '1' || c == '4')
+            if (c == '-' || c == '+' || c == '1' || c == '2')
                 open[3] = 1;
         }
     }
     cout << ry << " " << rx << " ";
 
     if (open[0] && open[1] && open[2] && open[3])
-        cout << "+";
-    else
     {
-        if (open[0] && open[1])
-            cout << "-";
-        if (open[2] && open[3])
-            cout << "|";
-        if (open[0] && open[2])
-            cout << "1";
-        if (open[0] && open[3])
-            cout << "2";
-        if (open[1] && open[3])
-            cout << "3";
-        if (open[1] && open[2])
-            cout << "4";
+        cout << "+";
+    }
+    else if (open[0] && !open[1] && open[2] && !open[3])
+    {
+        cout << "|";
+    }
+    else if (!open[0] && open[1] && !open[2] && open[3])
+    {
+        cout << "-";
+    }
+    else if (open[0] && open[1] && !open[2] && !open[3])
+    {
+        cout << "1";
+    }
+    else if (!open[0] && open[1] && open[2] && !open[3])
+    {
+        cout << "2";
+    }
+    else if (!open[0] && !open[1] && open[2] && open[3])
+    {
+        cout << "3";
+    }
+    else if (open[0] && !open[1] && !open[2] && open[3])
+    {
+        cout << "4";
     }
 }
-void check_dir(int y, int x)
+int check_dir(int y, int x)
 {
-    int d;
+    int d = -1;
     for (int i = 0; i < 4; i++)
     {
-        int ny = y + dy[i];
-        int nx = x + dx[i];
+        int ny = y + dir[i][0];
+        int nx = x + dir[i][1];
 
         char c = map[ny][nx];
-        if (c == '.' || check_limit(ny, nx) == 0)
+        if (c == '.')
+            continue;
+        if (!isValid(ny, nx))
             continue;
 
         if (i == 0)
         {
-            if (c == '-' || c == '+')
-                d = 0;
-            if (c == '3')
-                d = 3;
-            if (c == '4')
-                d = 2;
-        }
-        if (i == 1)
-        {
-            if (c == '-' || c == '+')
-                d = 1;
-            if (c == '1')
-                d = 2;
-            if (c == '2')
-                d = 3;
-        }
-        if (i == 2)
-        {
-            if (c == '|' || c == '+')
-                d = 2;
-            if (c == '2')
-                d = 0;
-            if (c == '3')
-                d = 1;
-        }
-        if (i == 3)
-        {
-            if (c == '|' || c == '+')
-                d = 3;
-            if (c == '4')
-                d = 1;
-            if (c == '1')
+            if (c == '|' || c == '+' || c == '2' || c == '3')
                 d = 0;
         }
-        q.push({{ny, nx}, d});
+        else if (i == 1)
+        {
+            if (c == '-' || c == '+' || c == '3' || c == '4')
+                d = 1;
+        }
+        else if (i == 2)
+        {
+            if (c == '|' || c == '+' || c == '1' || c == '4')
+                d = 2;
+        }
+        else if (i == 3)
+        {
+            if (c == '-' || c == '+' || c == '1' || c == '2')
+                d = 3;
+        }
     }
-    return;
+    return d;
 }
 
 void search()
 {
-    int y = q.front().first.first;
-    int x = q.front().first.second;
-    check_dir(y, x);
-    q.pop();
+    int y = m[0].first;
+    int x = m[0].second;
+    int d = check_dir(y, x);
+
+    if (d == -1)
+    {
+        y = m[1].first;
+        x = m[1].second;
+        d = check_dir(y, x);
+    }
+    q.push({{y, x}, d});
 
     while (q.size())
     {
-        y = q.front().first.first;
-        x = q.front().first.second;
+        int y = q.front().first.first;
+        int x = q.front().first.second;
         int d = q.front().second;
-        int ny = y + dy[d];
-        int nx = x + dx[d];
+        int ny = y + dir[d][0];
+        int nx = x + dir[d][1];
         int nd;
         char c = map[ny][nx];
 
@@ -148,39 +146,39 @@ void search()
 
         if (d == 0)
         {
-            if (c == '-' || c == '+')
+            if (c == '|' || c == '+')
                 nd = 0;
-            if (c == '3')
+            else if (c == '2')
+                nd = 1;
+            else if (c == '3')
                 nd = 3;
-            if (c == '4')
-                nd = 2;
         }
-        if (d == 1)
+        else if (d == 1)
         {
             if (c == '-' || c == '+')
                 nd = 1;
-            if (c == '1')
+            else if (c == '3')
                 nd = 2;
-            if (c == '2')
-                nd = 3;
+            else if (c == '4')
+                nd = 0;
         }
-        if (d == 2)
+        else if (d == 2)
         {
             if (c == '|' || c == '+')
                 nd = 2;
-            if (c == '2')
-                nd = 0;
-            if (c == '3')
+            else if (c == '1')
                 nd = 1;
-        }
-        if (d == 3)
-        {
-            if (c == '|' || c == '+')
+            else if (c == '4')
                 nd = 3;
-            if (c == '4')
-                nd = 1;
-            if (c == '1')
+        }
+        else if (d == 3)
+        {
+            if (c == '-' || c == '+')
+                nd = 3;
+            else if (c == '1')
                 nd = 0;
+            else if (c == '2')
+                nd = 2;
         }
         q.push({{ny, nx}, nd});
         q.pop();
@@ -189,23 +187,24 @@ void search()
 
 int main()
 {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+
     cin >> r >> c;
+
+    char s;
     for (int i = 1; i <= r; i++)
     {
         for (int j = 1; j <= c; j++)
         {
-            scanf("%1s", &map[i][j]);
+            cin >> s;
+            map[i][j] = s;
             if (map[i][j] == 'M' || map[i][j] == 'Z')
                 m.push_back({i, j});
         }
     }
 
-    int y1 = m[0].first;
-    int x1 = m[0].second;
-    int y2 = m[1].first;
-    int x2 = m[1].second;
-
-    q.push({{y1, x1}, -1});
     search();
     find_pipe();
 }
